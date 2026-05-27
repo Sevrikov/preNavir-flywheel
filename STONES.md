@@ -116,8 +116,37 @@ Obsidian vault integration (read/write markdown notes).
 
 ## soul/ — Reasoning
 
-### inferencesh
-*(planned)* LLM API call inside the agent loop. Gives NAVIR autonomous reasoning.
+### inferencesh *(NEW — 2026-05-27, VALIDATED)*
+LLM reasoning inside the agent loop. Claude Haiku decides next UI action.
+```python
+execute("decide",                                         # next UI action
+    goal="Navigate to login page",
+    ocr_text="github.com | sign in | explore...",
+    elements=[{"id":1,"type":"button","label":"Sign in","x":1755,"y":65}],
+    history=[],
+)
+# → {"action":"click","target":"Sign in","reasoning":"...","confidence":0.99}
+
+execute("judge",                                          # evaluate result
+    criteria="User is on login page with password field",
+    result_text="github.com/login ... password ... sign in button",
+)
+# → {"verdict":true,"reasoning":"...","confidence":0.95}
+
+execute("plan",                                           # break goal into steps
+    goal="Log in with email user@test.com password secret",
+    ocr_text="username or email. password. sign in.",
+    elements=[...],
+)
+# → {"steps":[{type:click,target:email},{type:type,text:user@test.com},...]}
+
+execute("reflect",                                        # diagnose failure
+    goal="...", ocr_text="...", history=[...]
+)
+# → {"diagnosis":"...","fix":{type:click,target:...},"confidence":0.9}
+```
+Model: `claude-haiku-4-5-20251001` (1-2s/call). Key: `D:\clowd\Gauntlet\secrets.json`
+**Live test**: github.com → decide("click Sign in") → login page → decide("done") ✓
 
 ---
 
