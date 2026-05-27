@@ -143,10 +143,10 @@ Obsidian vault integration (read/write markdown notes).
 
 ---
 
-## soul/ � Reasoning
+## soul/ � Reasoning
 
-### vision_loop *(NEW � 2026-05-27)*
-See>Think>Act feedback loop. OCR + cv2, no API key.
+### vision_loop *(VALIDATED � 2026-05-27)*
+See→Think→Act feedback loop. OCR + cv2, no API key. **Full cycle confirmed ✓**
 ```python
 execute("windows")                                        # list visible windows
 execute("see", window_title="Chrome")                     # {elements[], ocr_text}
@@ -155,14 +155,15 @@ execute("click", window_title="Chrome", label="Submit")   # click + SSIM verify
 execute("check", window_title="Chrome", goal="text:OK")   # {reached: bool}
 execute("loop",                                           # full autonomous loop
     window_title="Chrome",
-    goal="absent:Loading",
-    steps=[
-        {"type": "click", "target": "Submit"},
-        {"type": "wait", "ms": 500},
-    ],
-    max_attempts=5,
+    goal="text:Password",
+    steps=[{"type": "click", "target": "Sign in", "wait_ms": 2500}],
+    max_attempts=3,
     timeout_sec=30,
 )
+# LIVE TEST: status=success, attempts=1, ssim=changed px=2137 ✓
 ```
 Goal DSL: `text:X` / `absent:X` / `type:X` / `ocr:X`
-Backend: `capture_window` + `detect_elements` (Tesseract+cv2) + `PostMessage WM_LBUTTON` + `ClickVerifier` (SSIM)
+Cyrillic: `_cyr_to_ocr()` maps т→r, л→n, г→r (Tesseract Latin confusion)
+Click: `SetCursorPos + mouse_event(0,0)` with `ClientToScreen + scale` coord mapping
+Backend: `capture_window` + `detect_elements` (Tesseract+cv2) + SSIM `ClickVerifier`
+NOTE: window must be maximized/restored — minimized returns 28x160 black bitmap
