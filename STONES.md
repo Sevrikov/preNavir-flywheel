@@ -112,6 +112,25 @@ Backends: `pdftotext` (system) / `python-docx` / `openpyxl` / direct read
 ### vault_read / vault_append
 Obsidian vault integration (read/write markdown notes).
 
+### compress_stone *(NEW — 2026-05-27)*
+Context compression for NAVIR agent loops. Reduces tokens before LLM calls.
+```python
+execute("compress",                                   # compress all fields at once
+    ocr_text="raw OCR ...", elements=[...], history=[...], messages=[...])
+# → {ocr_text, elements, history, _engine, _ratio, _tokens_before, _tokens_after}
+
+execute("ocr", text="raw OCR with noise ©®°•·...")   # OCR noise removal only
+# → {text, before_chars, after_chars, saved_pct}
+
+execute("history", history=[...], max_history=5)      # trim + summarize old entries
+# → {history, before, after}
+
+execute("stats", text="...")                          # token count estimate
+# → {chars, approx_tokens, headroom_available, engine}
+```
+Engines: `navir_crush` (built-in, ~23% savings) → auto-upgrades to `headroom-ai` (60-95%) when installed.
+Vendor path: `D:\clowd\Gauntlet\vendor` (add to sys.path)
+
 ---
 
 ## soul/ — Reasoning
