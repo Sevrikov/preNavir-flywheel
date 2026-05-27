@@ -139,3 +139,30 @@ Obsidian vault integration (read/write markdown notes).
   }
 }
 ```
+
+
+---
+
+## soul/ — Reasoning
+
+### vision_loop *(NEW — 2026-05-27)*
+See>Think>Act feedback loop. OCR + cv2, no API key.
+```python
+execute("windows")                                        # list visible windows
+execute("see", window_title="Chrome")                     # {elements[], ocr_text}
+execute("find", window_title="Chrome", label="Submit")    # {found, element}
+execute("click", window_title="Chrome", label="Submit")   # click + SSIM verify
+execute("check", window_title="Chrome", goal="text:OK")   # {reached: bool}
+execute("loop",                                           # full autonomous loop
+    window_title="Chrome",
+    goal="absent:Loading",
+    steps=[
+        {"type": "click", "target": "Submit"},
+        {"type": "wait", "ms": 500},
+    ],
+    max_attempts=5,
+    timeout_sec=30,
+)
+```
+Goal DSL: `text:X` / `absent:X` / `type:X` / `ocr:X`
+Backend: `capture_window` + `detect_elements` (Tesseract+cv2) + `PostMessage WM_LBUTTON` + `ClickVerifier` (SSIM)
